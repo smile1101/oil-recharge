@@ -1,8 +1,8 @@
 <?php
 
-namespace Payment\Contracts;
+namespace Recharge\Contracts;
 
-use Payment\Supports\Collection;
+use Recharge\Supports\Collection;
 
 interface GatewayInterface
 {

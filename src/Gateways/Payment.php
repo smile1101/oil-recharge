@@ -1,14 +1,14 @@
 <?php
 
-namespace Payment\Gateways;
+namespace Recharge\Gateways;
 
-use Payment\Contracts\GatewayApplicationInterface;
-use Payment\Contracts\GatewayInterface;
-use Payment\Exceptions\InvalidGatewayException;
-use Payment\Supports\Config;
-use Payment\Supports\Str;
+use Recharge\Contracts\GatewayApplicationInterface;
+use Recharge\Contracts\GatewayInterface;
+use Recharge\Exceptions\InvalidGatewayException;
+use Recharge\Supports\Config;
+use Recharge\Supports\Str;
 
-class Payment implements GatewayApplicationInterface
+class Recharge implements GatewayApplicationInterface
 {
 
     /**

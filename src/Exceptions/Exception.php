@@ -1,6 +1,6 @@
 <?php
 
-namespace Payment\Exceptions;
+namespace Recharge\Exceptions;
 
 class Exception extends \Exception
 {

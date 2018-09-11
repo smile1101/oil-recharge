@@ -1,6 +1,6 @@
 <?php
 
-namespace Payment\Gateways\Gxpay;
+namespace Recharge\Gateways\Gxpay;
 
 
 class Support

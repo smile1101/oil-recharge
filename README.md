@@ -13,7 +13,7 @@ $ composer require payment/payment
 ```php
 <?php
 
-use Payment\App;
+use Recharge\App;
 
 #欧飞加油卡直充 最小配置参数
 $config = [

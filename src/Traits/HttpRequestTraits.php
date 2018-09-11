@@ -1,13 +1,13 @@
 <?php
 
-namespace Payment\Traits;
+namespace Recharge\Traits;
 
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Trait HttpRequestTraits
- * @package Payment\Oil\Traits
+ * @package Recharge\Oil\Traits
  */
 trait HttpRequestTraits
 {

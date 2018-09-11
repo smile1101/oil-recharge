@@ -1,12 +1,12 @@
 <?php
 
-namespace Payment\Gateways\Jlhpay;
+namespace Recharge\Gateways\Jlhpay;
 
-use Payment\Contracts\GatewayInterface;
-use Payment\Supports\Collection;
-use Payment\Supports\Config;
-use Payment\Supports\Response;
-use Payment\Traits\HttpRequestTraits;
+use Recharge\Contracts\GatewayInterface;
+use Recharge\Supports\Collection;
+use Recharge\Supports\Config;
+use Recharge\Supports\Response;
+use Recharge\Traits\HttpRequestTraits;
 use Symfony\Component\HttpFoundation\Request;
 
 class JlhpayGateway implements GatewayInterface

@@ -1,15 +1,15 @@
 <?php
 
-namespace Payment\Gateways\Jlhpay;
+namespace Recharge\Gateways\Jlhpay;
 
-use Payment\Supports\Response;
+use Recharge\Supports\Response;
 
 class Support
 {
     /**
      * 签名并返回
      * @param $params
-     * @return \Payment\Supports\Collection
+     * @return \Recharge\Supports\Collection
      */
     public static function sign($params)
     {

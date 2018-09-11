@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Payment\Supports;
+namespace Recharge\Supports;
 
 use ArrayAccess;
 use ArrayIterator;

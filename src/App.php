@@ -1,15 +1,15 @@
 <?php
 
-namespace Payment;
+namespace Recharge;
 
-use Payment\Contracts\GatewayApplicationInterface;
-use Payment\Exceptions\InvalidGatewayException;
-use Payment\Supports\Config;
-use Payment\Supports\Str;
+use Recharge\Contracts\GatewayApplicationInterface;
+use Recharge\Exceptions\InvalidGatewayException;
+use Recharge\Supports\Config;
+use Recharge\Supports\Str;
 
 /**
  * classmap into
- * @package Payment\Oli
+ * @package Recharge\Oli
  */
 class App
 {

@@ -1,17 +1,17 @@
 <?php
 
-namespace Payment\Gateways\Ofpay;
+namespace Recharge\Gateways\Ofpay;
 
-use Payment\Contracts\GatewayInterface;
-use Payment\Supports\Collection;
-use Payment\Supports\Config;
-use Payment\Supports\Response;
-use Payment\Traits\HttpRequestTraits;
+use Recharge\Contracts\GatewayInterface;
+use Recharge\Supports\Collection;
+use Recharge\Supports\Config;
+use Recharge\Supports\Response;
+use Recharge\Traits\HttpRequestTraits;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * 欧飞直充
- * @package Payment\Oil\Gateways\Ofpay
+ * @package Recharge\Oil\Gateways\Ofpay
  */
 class OfpayGateway implements GatewayInterface
 {

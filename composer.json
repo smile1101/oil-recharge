@@ -1,5 +1,5 @@
 {
-  "name": "payment/oil-builder",
+  "name": "recharge/oil-builder",
   "description": "aggregate-payment-php for php",
   "keywords": [
     "pay",
@@ -27,12 +27,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Payment\\": "./src"
+      "Recharge\\": "./src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Payment\\Tests\\": "tests"
+      "Recharge\\Tests\\": "tests"
     }
   }
 }

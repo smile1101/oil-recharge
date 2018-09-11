@@ -1,6 +1,6 @@
 <?php
 
-namespace Payment\Supports;
+namespace Recharge\Supports;
 
 class Config extends Collection
 {

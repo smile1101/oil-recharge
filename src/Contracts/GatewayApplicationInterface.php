@@ -1,6 +1,6 @@
 <?php
 
-namespace Payment\Contracts;
+namespace Recharge\Contracts;
 
 
 interface GatewayApplicationInterface

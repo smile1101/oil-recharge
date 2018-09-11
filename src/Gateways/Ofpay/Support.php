@@ -1,10 +1,10 @@
 <?php
 
-namespace Payment\Gateways\Ofpay;
+namespace Recharge\Gateways\Ofpay;
 
 
-use Payment\Supports\Collection;
-use Payment\Supports\Response;
+use Recharge\Supports\Collection;
+use Recharge\Supports\Response;
 
 class Support
 {
