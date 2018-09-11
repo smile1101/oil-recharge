@@ -34,5 +34,6 @@
     "psr-4": {
       "Recharge\\Tests\\": "tests"
     }
-  }
+  },
+  "minimum-stability":"dev"
 }
