@@ -5,7 +5,7 @@
 Install the latest version with
 
 ```bash
-$ composer require smile1101/oil-recharge
+$ composer require zlwleng/oil-recharge
 ```
 
 ## Basic Usage
