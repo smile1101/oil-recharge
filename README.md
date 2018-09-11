@@ -5,7 +5,7 @@
 Install the latest version with
 
 ```bash
-$ composer require recharge/oil-builder
+$ composer require smile1101/oil-recharge
 ```
 
 ## Basic Usage
