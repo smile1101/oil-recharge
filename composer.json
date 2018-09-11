@@ -1,0 +1,38 @@
+{
+  "name": "payment/oil-builder",
+  "description": "aggregate-payment-php for php",
+  "keywords": [
+    "pay",
+    "php",
+    "composer-plugin",
+    "oil"
+  ],
+  "homepage": "http://github.com/smile_1101/payment",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Peter",
+      "email": "smile_1101@yeah.net"
+    }
+  ],
+  "require": {
+    "php": "^7.0",
+    "guzzlehttp/guzzle": "~6.0",
+    "symfony/http-foundation": "^3.0|^4.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.2",
+    "mockery/mockery": "1.0.x-dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Payment\\": "./src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Payment\\Tests\\": "tests"
+    }
+  }
+}
