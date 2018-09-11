@@ -8,7 +8,7 @@ use Recharge\Exceptions\InvalidGatewayException;
 use Recharge\Supports\Config;
 use Recharge\Supports\Str;
 
-class Recharge implements GatewayApplicationInterface
+class Payment implements GatewayApplicationInterface
 {
 
     /**
