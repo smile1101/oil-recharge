@@ -5,7 +5,7 @@
 Install the latest version with
 
 ```bash
-$ composer require payment/payment
+$ composer require recharge/oil-builder
 ```
 
 ## Basic Usage
