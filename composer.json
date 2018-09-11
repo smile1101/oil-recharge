@@ -1,13 +1,13 @@
 {
   "name": "smile1101/oil-recharge",
-  "description": "aggregate-payment-php for php",
+  "description": "oil-recharge-php for php",
   "keywords": [
     "pay",
     "php",
     "composer-plugin",
     "oil"
   ],
-  "homepage": "http://github.com/smile_1101/payment",
+  "homepage": "https://github.com/zlwleng/oil-recharge",
   "type": "library",
   "license": "MIT",
   "authors": [
