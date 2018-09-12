@@ -90,9 +90,9 @@ class GxpayGateway implements GatewayInterface
     {
         $args = func_get_arg(0);
         $timestamp = $this->timestamp;
-        $url = $this->gateway .= md5('account_detail') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('des_key'), $this->config->get('des_iv')));
+        $url = $this->gateway .= md5('account_detail') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('desKey'), $this->config->get('desIv')));
         try {
-            $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('des_key'), $this->config->get('des_iv')), [
+            $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('desKey'), $this->config->get('desIv')), [
                 'headers' => ['Content-Type: application/json; charset=UTF-8']
             ]);
             $this->response = Response::response([
@@ -121,8 +121,8 @@ class GxpayGateway implements GatewayInterface
         $this->payload['bussinessParam'] = json_encode([
             'gxOrderNo' => $args['gxOrder']
         ]);
-        $url = $this->gateway .= md5('query_gas_order') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('des_key'), $this->config->get('des_iv')));
-        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('des_key'), $this->config->get('des_iv')), [
+        $url = $this->gateway .= md5('query_gas_order') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('desKey'), $this->config->get('desIv')));
+        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('desKey'), $this->config->get('desIv')), [
             'headers' => ['Content-Type: application/json; charset=UTF-8']
         ]);
         if (isset($data['status']) && $response['status'] == 200) {
@@ -137,7 +137,7 @@ class GxpayGateway implements GatewayInterface
                 'sign' => md5('partnerId' . $args['orderId']
                     . 'partnerNo' . $this->config->get('partner')
                     . 'gxOrderNo' . $args['gxOrder']
-                    . 'status' . $status . $this->config->get('des_key'))
+                    . 'status' . $status . $this->config->get('desKey'))
             ]));
         } else {
             $this->response = [
@@ -173,9 +173,9 @@ class GxpayGateway implements GatewayInterface
             'userAccount' => $args['cardNo'], //油卡号
             'partnerNo' => $args['orderId'],   //订单号
         ]);
-        $url = $this->gateway .= md5('buy_charge') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('des_key'), $this->config->get('des_iv')));
+        $url = $this->gateway .= md5('buy_charge') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('desKey'), $this->config->get('desIv')));
 
-        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('des_key'), $this->config->get('des_iv')), [
+        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('desKey'), $this->config->get('desIv')), [
             'headers' => ['Content-Type: application/json; charset=UTF-8']
         ]);
         if (isset($response['status']) && $response['status'] == '200') {
@@ -240,7 +240,7 @@ class GxpayGateway implements GatewayInterface
     public function verify($data)
     {
         $args = func_get_arg(0);
-        $appKey = $this->config->get('des_key');
+        $appKey = $this->config->get('desKey');
         $sign = $data['sign'];
         unset($data['sign']);
         $strKey = '';
@@ -263,8 +263,8 @@ class GxpayGateway implements GatewayInterface
         $this->payload['bussinessParam'] = json_encode([
             'type' => 1
         ]);
-        $url = $this->gateway .= md5('query_gas_order') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('des_key'), $this->config->get('des_iv')));
-        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('des_key'), $this->config->get('des_iv')), [
+        $url = $this->gateway .= md5('query_gas_order') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('desKey'), $this->config->get('desIv')));
+        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('desKey'), $this->config->get('desIv')), [
             'headers' => ['Content-Type: application/json; charset=UTF-8']
         ]);
         if (isset($response['status']) && $response['status'] == 200) {
