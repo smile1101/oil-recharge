@@ -232,4 +232,14 @@ class JlhpayGateway implements GatewayInterface
     {
         return $this->response;
     }
+
+    /**
+     * 验签
+     * @param $data
+     * @return mixed
+     */
+    public function verify($data)
+    {
+        // TODO: Implement verify() method.
+    }
 }

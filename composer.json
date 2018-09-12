@@ -5,7 +5,9 @@
     "pay",
     "php",
     "composer-plugin",
-    "oil"
+    "oil",
+    "ofpay",
+    "gxpay"
   ],
   "homepage": "http://github.com/zlwleng/oil-recharge",
   "type": "library",

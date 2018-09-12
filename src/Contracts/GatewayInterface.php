@@ -46,4 +46,11 @@ interface GatewayInterface
      * @return Collection
      */
     public function commit();
+
+    /**
+     * 验签
+     * @param $data
+     * @return mixed
+     */
+    public function verify($data);
 }

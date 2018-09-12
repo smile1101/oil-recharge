@@ -174,7 +174,7 @@ class OfpayGateway implements GatewayInterface
                 //回调处理
                 $this->response = Response::response($this->post($this->config->get('retUrl'), [
                     'sporder_id' => $response['sporder_id'],
-                    'ret_code' => $response['game_state']
+                    'ret_code' => $response['game_state'],
                 ]));
                 return $this;
             }
@@ -202,14 +202,27 @@ class OfpayGateway implements GatewayInterface
     {
         $request = new Request();
         $response = [
-            'orderid' => $request->get('sporder_id'),
-            'status' => $request->get('ret_code'),
-            'msg' => mb_convert_encoding($_POST['err_msg'], 'UTF-8', 'GBK')
+            // sporder_id 商户订单号
+            'orderSn' => $request->get('sporder_id'),
+            'code' => $request->get('ret_code'),
+            'msg' => mb_convert_encoding($request->get('err_msg', ''), 'UTF-8', 'GBK')
         ];
-        if (!$response['orderid'] || !in_array($response['status'], [GatewayInterface::STATUS_FAIL, GatewayInterface::STATUS_SUCCESS])) {
-            exit;
+        if (!$response['orderSn'] || !in_array($response['code'], [GatewayInterface::STATUS_FAIL, GatewayInterface::STATUS_SUCCESS])) {
+            $this->response = Response::response();
+        } else {
+            $response['status'] = 1;
+            $this->response = Response::response($response);
         }
-        $this->response = Response::response($response);
         return $this;
+    }
+
+    /**
+     * 验签
+     * @param $data
+     * @return mixed
+     */
+    public function verify($data)
+    {
+
     }
 }
