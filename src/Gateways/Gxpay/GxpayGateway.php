@@ -127,17 +127,17 @@ class GxpayGateway implements GatewayInterface
         ]);
         if (isset($data['status']) && $response['status'] == 200) {
             // -1 充值失败 6 充值成功 4 充值中
-            $status = $response['data']['status'] == -1 ? 1 : ($response['data']['status'] == 6 ? 6 : 0);
+            //$status = $response['data']['status'] == -1 ? 1 : ($response['data']['status'] == 6 ? 6 : 0);
             //回调处理
             $this->response = Response::response($this->post($this->config->get('retUrl'), [
                 'partnerId' => $args['orderId'],
                 'partnerNo' => $this->config->get('partner'),
                 'gxOrderNo' => $args['gxOrder'],
-                'status' => $status,
+                'status' => $response['data']['status'],
                 'sign' => md5('partnerId' . $args['orderId']
                     . 'partnerNo' . $this->config->get('partner')
                     . 'gxOrderNo' . $args['gxOrder']
-                    . 'status' . $status . $this->config->get('desKey'))
+                    . 'status' . $response['data']['status'] . $this->config->get('desKey'))
             ]));
         } else {
             $this->response = Response::response([
