@@ -6,10 +6,10 @@ class Response
 {
     /**
      * 返回
-     * @param mixed ...$args
+     * @param mixed $args
      * @return Collection
      */
-    public static function response(...$args)
+    public static function response($args = [])
     {
         if (empty($args)) {
             $args = [
@@ -18,6 +18,6 @@ class Response
             ];
         }
         $collection = new Collection($args);
-        return $collection->get(0);
+        return $collection;
     }
 }

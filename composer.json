@@ -2,9 +2,9 @@
   "name": "zlwleng/oil-recharge",
   "description": "oil-recharge-php for php",
   "keywords": [
-    "pay",
-    "php",
+    "recharge",
     "composer-plugin",
+    "php",
     "oil",
     "ofpay",
     "gxpay"

@@ -38,7 +38,7 @@ class OfpayGateway implements GatewayInterface
      * 响应
      * @var Collection
      */
-    protected $response;
+    public $response;
 
     public function __construct(Config $config)
     {
@@ -88,7 +88,7 @@ class OfpayGateway implements GatewayInterface
      * @param array $payload
      * @return mixed
      */
-    public function make(...$payload)
+    public function pay(...$payload)
     {
         $payload = func_get_arg(0);
         if (empty($payload)) {
@@ -127,7 +127,7 @@ class OfpayGateway implements GatewayInterface
         if ((int)$response['retcode'] === 1) {
             $this->response = Response::response([
                 'status' => 1,
-                'pay_sn' => $response['orderId'],
+                'paySn' => $response['orderId'],
                 'amount' => $payload['money'],
                 'code' => $response['game_state'] //充值中
             ]);
@@ -156,7 +156,7 @@ class OfpayGateway implements GatewayInterface
      * @param $args ['orderId', 'retUrl']
      * @return mixed
      */
-    public function orders(...$args)
+    public function search(...$args)
     {
         $args = func_get_arg(0);
         $params = [
@@ -187,20 +187,12 @@ class OfpayGateway implements GatewayInterface
     }
 
     /**
-     * @return Collection
-     */
-    public function commit()
-    {
-        return $this->response;
-    }
-
-    /**
      * 回调处理
      * @return mixed
      */
     public function callback()
     {
-        $request = new Request();
+        $request = Request::createFromGlobals()->request;
         $response = [
             // sporder_id 商户订单号
             'orderSn' => $request->get('sporder_id'),
@@ -224,5 +216,16 @@ class OfpayGateway implements GatewayInterface
     public function verify($data)
     {
 
+    }
+
+    public function __call($name, $arguments)
+    {
+        if (!method_exists($this, $name))
+            $this->response = Response::response([
+                'status' => -1,
+                'msg' => "Method:{$name} Not Exists"
+            ]);
+
+        return $this;
     }
 }

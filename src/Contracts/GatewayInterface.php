@@ -2,13 +2,12 @@
 
 namespace Recharge\Contracts;
 
-use Recharge\Supports\Collection;
-
 interface GatewayInterface
 {
     const STATUS_PROCESSING = 0; // 处理中
     const STATUS_SUCCESS = 1; // 成功
     const STATUS_FAIL = 9; // 失败
+
     /**
      * 获取产品列表
      * @param array $args
@@ -28,24 +27,19 @@ interface GatewayInterface
      * @param $args
      * @return mixed
      */
-    public function orders(...$args);
+    public function search(...$args);
 
     /**
      * @param array $payload
      * @return mixed
      */
-    public function make(...$payload);
+    public function pay(...$payload);
 
     /**
      * 回调处理
      * @return mixed
      */
     public function callback();
-
-    /**
-     * @return Collection
-     */
-    public function commit();
 
     /**
      * 验签

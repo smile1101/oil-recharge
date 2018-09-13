@@ -4,6 +4,7 @@ namespace Recharge;
 
 use Recharge\Contracts\GatewayApplicationInterface;
 use Recharge\Exceptions\InvalidGatewayException;
+use Recharge\Gateways\Payment;
 use Recharge\Supports\Config;
 use Recharge\Supports\Str;
 
@@ -15,25 +16,29 @@ class App
 {
     private $config;
 
-    public function __construct($config)
+    /**
+     * 驱动器
+     * @var $driver
+     */
+    protected static $driver;
+
+    public static function driver($driver)
     {
-        $this->config = new Config($config);
+        self::$driver = $driver;
+        return new static();
     }
 
     /**
      * 验证
-     * @param $method
+     * @param $class
+     * @param $args
      * @return mixed
      */
-    protected function build($method)
+    protected function build($class, $args)
     {
-        $gateways = __NAMESPACE__ . "\\Gateways\\" . Str::studly($method);
+        $this->config = new Config($args[0]);
 
-        if (class_exists($gateways)) {
-            return self::make($gateways);
-        }
-
-        throw new InvalidGatewayException("Gateway [{$method}] Not Exists");
+        return $this->make($class);
     }
 
     /**
@@ -43,23 +48,23 @@ class App
      */
     protected function make($class)
     {
-        $app = new $class($this->config);
+        $app = new Payment($this->config);
 
         if ($app instanceof GatewayApplicationInterface) {
-            return $app;
+            return $app->make($class, self::$driver);
         }
 
         throw new InvalidGatewayException("Gateway [$class] Must Be An Instance Of GatewayApplicationInterface");
     }
 
     /**
-     * @param \stdClass $name 类名
-     * @param mixed $arguments 基础参数
+     * @param $class
+     * @param $args
      * @return mixed
      */
-    public static function __callStatic($name, $arguments)
+    public static function __callStatic($class, $args)
     {
-        $app = new self(...$arguments);
-        return $app->build($name);
+        $app = new static();
+        return $app->build($class, $args);
     }
 }

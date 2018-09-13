@@ -21,7 +21,7 @@ class GxpayGateway implements GatewayInterface
     /**
      * @var Collection
      */
-    protected $response;
+    public $response;
 
     const VERSION = 1.0;
 
@@ -113,7 +113,7 @@ class GxpayGateway implements GatewayInterface
      * @param $args
      * @return mixed
      */
-    public function orders(...$args)
+    public function search(...$args)
     {
         $args = func_get_arg(0);
 
@@ -140,12 +140,12 @@ class GxpayGateway implements GatewayInterface
                     . 'status' . $status . $this->config->get('desKey'))
             ]));
         } else {
-            $this->response = [
+            $this->response = Response::response([
                 'status' => -1,
                 'code' => $response['status'],
                 'msg' => $response['statusText'],
                 'remark' => '订单信息查询失败'
-            ];
+            ]);
         }
         return $this;
     }
@@ -154,7 +154,7 @@ class GxpayGateway implements GatewayInterface
      * @param array $payload
      * @return mixed
      */
-    public function make(...$payload)
+    public function pay(...$payload)
     {
         $args = func_get_arg(0);
         $product = $this->getProducts([
@@ -180,20 +180,20 @@ class GxpayGateway implements GatewayInterface
         ]);
         if (isset($response['status']) && $response['status'] == '200') {
             //$status = $response['data']['status'] == -1 ? 9 : ($response['data']['status'] == 6 ? 1 : 0);
-            $this->response = [
+            $this->response = Response::response([
                 'status' => 1,
-                'pay_sn' => $response['data']['orderNo'], //回调订单号
+                'paySn' => $response['data']['orderNo'], //回调订单号
                 'amount' => $args['money'],
                 'code' => GatewayInterface::STATUS_PROCESSING, //充值中
                 'msg' => $response['statusText'],
-            ];
+            ]);
         } else {
-            $this->response = [
+            $this->response = Response::response([
                 'status' => -1,
                 'code' => $response['status'],
                 'msg' => $response['statusText'],
                 'remark' => "充值失败({$response['status']})，请联系客服手动充值"
-            ];
+            ]);
         }
         return $this;
     }
@@ -204,7 +204,8 @@ class GxpayGateway implements GatewayInterface
      */
     public function callback()
     {
-        $request = new Request();
+        $request = Request::createFromGlobals()->request;
+        #$request = new Request();
         $response = [
             'partnerId' => $request->get('partnerId'),
             'partnerNo' => $request->get('partnerNo'),
@@ -224,13 +225,6 @@ class GxpayGateway implements GatewayInterface
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
-    public function commit()
-    {
-        return $this->response;
-    }
 
     /**
      * 验签
@@ -245,7 +239,8 @@ class GxpayGateway implements GatewayInterface
         unset($data['sign']);
         $strKey = '';
         foreach ($args as $key => $val) {
-            $strKey .= $key . $val;
+            if (!empty($val) && !is_null($key))
+                $strKey .= $key . $val;
         }
         $strKey .= $appKey;
         if (md5($strKey) === $sign)
@@ -272,6 +267,17 @@ class GxpayGateway implements GatewayInterface
         } else {
             $this->response = Response::response();
         }
+
+        return $this;
+    }
+
+    public function __call($name, $arguments)
+    {
+        if (!method_exists($this, $name))
+            $this->response = Response::response([
+                'status' => -1,
+                'msg' => "Method:{$name} Not Exists"
+            ]);
 
         return $this;
     }

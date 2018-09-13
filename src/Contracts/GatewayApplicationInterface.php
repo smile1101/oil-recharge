@@ -7,8 +7,8 @@ interface GatewayApplicationInterface
 {
     /**
      * @param $method
-     * @param mixed $args
+     * @param $driver
      * @return mixed
      */
-    public function make($method, $args);
+    public function make($method, $driver);
 }

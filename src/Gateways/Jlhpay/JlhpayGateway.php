@@ -16,7 +16,7 @@ class JlhpayGateway implements GatewayInterface
     /**
      * @var Collection
      */
-    protected $response;
+    public $response;
 
     /**
      * @var Config
@@ -83,7 +83,7 @@ class JlhpayGateway implements GatewayInterface
      * @param $args
      * @return mixed
      */
-    public function orders(...$args)
+    public function search(...$args)
     {
         $args = func_get_arg(0);
         $params = [
@@ -135,7 +135,7 @@ class JlhpayGateway implements GatewayInterface
      * @param array $payload
      * @return mixed
      */
-    public function make(...$payload)
+    public function pay(...$payload)
     {
         $args = func_get_arg(0);
         if (empty($args)) {
@@ -168,17 +168,17 @@ class JlhpayGateway implements GatewayInterface
             ]
         ]);
         if ($response['status'] == 'success' && $response['code'] == '00') {
-            $this->response = [
+            $this->response = Response::response([
                 'status' => 1,
-                'pay_sn' => $response['bizOrderId'],
+                'paySn' => $response['bizOrderId'],
                 'amount' => $args['money'],
                 'code' => GatewayInterface::STATUS_PROCESSING //充值中
-            ];
+            ]);
         } else {
-            $this->response = [
+            $this->response = Response::response([
                 'status' => -1,
                 'msg' => "充值失败({$response['code']})，请联系客服手动充值"
-            ];
+            ]);
         }
         return $this;
     }
@@ -189,7 +189,7 @@ class JlhpayGateway implements GatewayInterface
      */
     public function callback()
     {
-        $request = new Request();
+        $request = Request::createFromGlobals()->request;
         $params = [
             'userId' => $request->get('userId'),
             'bizId' => $request->get('bizId'),
@@ -226,14 +226,6 @@ class JlhpayGateway implements GatewayInterface
     }
 
     /**
-     * @return Collection
-     */
-    public function commit()
-    {
-        return $this->response;
-    }
-
-    /**
      * 验签
      * @param $data
      * @return mixed
@@ -241,5 +233,16 @@ class JlhpayGateway implements GatewayInterface
     public function verify($data)
     {
         // TODO: Implement verify() method.
+    }
+
+    public function __call($name, $arguments)
+    {
+        if (!method_exists($this, $name))
+            $this->response = Response::response([
+                'status' => -1,
+                'msg' => "Method:{$name} Not Exists"
+            ]);
+
+        return $this;
     }
 }

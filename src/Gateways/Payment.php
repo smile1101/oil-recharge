@@ -18,11 +18,6 @@ class Payment implements GatewayApplicationInterface
      */
     protected $config;
 
-    /**
-     * 渠道
-     * @var $channel
-     */
-    protected $channel;
 
     public function __construct(Config $config)
     {
@@ -31,17 +26,15 @@ class Payment implements GatewayApplicationInterface
 
     /**
      * @param $method
-     * @param mixed $args
+     * @param $driver
      * @return mixed
      */
-    public function make($method, $args)
+    public function make($method, $driver)
     {
-        $this->channel = $args;
-
-        $gateway =  __NAMESPACE__ . '\\' . Str::studly($method) . '\\' . Str::studly($this->channel) . 'Gateway';
+        $gateway =  __NAMESPACE__ . '\\' . Str::studly($driver) . '\\' . Str::studly($method) . 'Gateway';
 
         if (class_exists($gateway)) {
-            return $this->makePay($gateway);
+            return $this->build($gateway);
         }
 
         throw new InvalidGatewayException("make Gateway [{$gateway}] not exists");
@@ -52,7 +45,7 @@ class Payment implements GatewayApplicationInterface
      * @param $gateway
      * @return mixed
      */
-    protected function makePay($gateway)
+    protected function build($gateway)
     {
         $app = new $gateway($this->config);
 
@@ -61,16 +54,5 @@ class Payment implements GatewayApplicationInterface
         }
 
         throw new InvalidGatewayException("make Gateway [{$gateway}] Must Be An Instance Of GatewayInterface");
-    }
-
-    /**
-     * 动态调用
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     */
-    public function __call($name, $arguments)
-    {
-        return $this->make($name, $arguments[0]);
     }
 }
