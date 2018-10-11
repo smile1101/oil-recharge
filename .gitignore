@@ -1,3 +1,5 @@
 ./verdor/*
-/verdor/
+.\verdor/*
 ./idea/
+\.idea/
+.\verdor
