@@ -6,17 +6,14 @@ use Recharge\Contracts\GatewayInterface;
 use Recharge\Supports\Collection;
 use Recharge\Supports\Config;
 use Recharge\Supports\Response;
-use Recharge\Traits\HttpRequestTraits;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * 欧飞直充
+ * 欧飞加油直充
  * @package Recharge\Oil\Gateways\Ofpay
  */
 class OfpayGateway implements GatewayInterface
 {
-
-    use HttpRequestTraits;
 
     /**
      * 固定版本
@@ -28,11 +25,6 @@ class OfpayGateway implements GatewayInterface
      */
     protected $config;
 
-    /**
-     * 网关
-     * @var string
-     */
-    protected $gateway = 'http://apitest.ofpay.com';
 
     /**
      * 响应
@@ -85,18 +77,17 @@ class OfpayGateway implements GatewayInterface
     }
 
     /**
-     * @param array $payload
-     * @return mixed
+     * exec a request
+     * @param mixed $payload
+     * @return mixed|Collection
      */
-    public function pay(...$payload)
+    public function pay($payload)
     {
-        $payload = func_get_arg(0);
         if (empty($payload)) {
-            $this->response = Response::response([
+            return Response::response([
                 'status' => -1,
                 'msg' => '请传必要参数！'
             ]);
-            return $this;
         }
         $product = $this->getProducts([
             'cardNo' => $payload['cardNo'],
@@ -104,14 +95,13 @@ class OfpayGateway implements GatewayInterface
         ]);
 
         if (empty($product)) {
-            $this->response = Response::response(['status' => -1,
+            return Response::response(['status' => -1,
                 'msg' => '暂不支持该产品充值，联系客服！'
             ]);
-            return $this;
         }
         $params = [
-            'userid' => $this->config->get('userid'),
-            'userpws' => $this->config->get('userpws'),
+            'userid' => $this->config->get('userId'),
+            'userpws' => $this->config->get('userPws'),
             'cardid' => $product[0],
             'cardnum' => $product[1],
             'sporder_id' => $payload['orderId'],
@@ -119,25 +109,13 @@ class OfpayGateway implements GatewayInterface
             'game_userid' => $payload['cardNo'],
             'chargeType' => $payload['cardNo']{0} == '9' ? 2 : 1,
             'ret_url' => $this->config->get('retUrl'),
-            'version' => self::VERSION
+            'version' => self::VERSION,
         ];
-        $params = Support::sign($params, $this->config->get('str_key'));
-        $endpoint = $this->gateway . '/sinopec/onlineorder.do?' . http_build_query($params);
-        $response = $this->post($endpoint, []);
-        if ((int)$response['retcode'] === 1) {
-            $this->response = Response::response([
-                'status' => 1,
-                'paySn' => $response['orderId'],
-                'amount' => $payload['money'],
-                'code' => $response['game_state'] //充值中
-            ]);
-            return $this;
-        }
-        $this->response = Response::response([
-            'status' => -1,
-            'msg' => !empty($response['err_msg']) ? $response['err_msg'] : '充值失败，联系客户手动充值！'
-        ]);
-        return $this;
+
+        return Support::requestApi('/sinopec/onlineorder.do?',
+            $params,
+            $this->config->get('strKey')
+        );
     }
 
     /**
@@ -145,10 +123,9 @@ class OfpayGateway implements GatewayInterface
      * @param array $args
      * @return mixed
      */
-    public function rest(...$args)
+    public function rest($args)
     {
         $args = func_get_arg(0);
-        return $this;
     }
 
     /**
@@ -156,34 +133,20 @@ class OfpayGateway implements GatewayInterface
      * @param $args ['orderId', 'retUrl']
      * @return mixed
      */
-    public function search(...$args)
+    public function search($args)
     {
-        $args = func_get_arg(0);
         $params = [
-            'userid' => $this->config->get('userid'),
-            'userpws' => $this->config->get('userpws'),
+            'userid' => $this->config->get('userId'),
+            'userpws' => $this->config->get('userPws'),
             'sporder_id' => $args['orderId'],
             'version' => self::VERSION
         ];
-        $params = Support::sign($params, $this->config->get('str_key'));
-        $endpoint = $this->gateway . '/queryOrderInfo.do?' . http_build_query($params);
-        $response = $this->post($endpoint, []);
-        if ($response['retcode'] == '1') {
-            $ret = ['status' => $response['game_state']];
-            if ($response['game_state'] == '1' || $response['game_state'] == '9') {
-                //回调处理
-                $this->response = Response::response($this->post($this->config->get('retUrl'), [
-                    'sporder_id' => $response['sporder_id'],
-                    'ret_code' => $response['game_state'],
-                ]));
-                return $this;
-            }
-            $this->response =  Response::response($ret);
-            return $this;
-        } else {
-            $this->response =  Response::response($response);
-            return $this;
-        }
+
+        return Support::callback('/queryOrderInfo.do?',
+            $params,
+            $this->config->get('strKey'),
+            $this->config->get('retUrl')
+        );
     }
 
     /**
@@ -200,12 +163,11 @@ class OfpayGateway implements GatewayInterface
             'msg' => mb_convert_encoding($request->get('err_msg', ''), 'UTF-8', 'GBK')
         ];
         if (!$response['orderSn'] || !in_array($response['code'], [GatewayInterface::STATUS_FAIL, GatewayInterface::STATUS_SUCCESS])) {
-            $this->response = Response::response();
+            return Response::response();
         } else {
             $response['status'] = 1;
-            $this->response = Response::response($response);
+            return Response::response($response);
         }
-        return $this;
     }
 
     /**
@@ -221,11 +183,11 @@ class OfpayGateway implements GatewayInterface
     public function __call($name, $arguments)
     {
         if (!method_exists($this, $name))
-            $this->response = Response::response([
+            return Response::response([
                 'status' => -1,
                 'msg' => "Method:{$name} Not Exists"
             ]);
 
-        return $this;
+        return $name($arguments);
     }
 }

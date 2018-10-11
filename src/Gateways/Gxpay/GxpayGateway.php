@@ -6,32 +6,17 @@ use Recharge\Contracts\GatewayInterface;
 use Recharge\Supports\Collection;
 use Recharge\Supports\Config;
 use Recharge\Supports\Response;
-use Recharge\Traits\HttpRequestTraits;
 use Symfony\Component\HttpFoundation\Request;
 
 class GxpayGateway implements GatewayInterface
 {
-    use HttpRequestTraits;
 
     /**
      * @var Config
      */
     protected $config;
 
-    /**
-     * @var Collection
-     */
-    public $response;
-
     const VERSION = 1.0;
-
-    /**
-     * 当前时间戳[毫秒]
-     * @var string
-     */
-    protected $timestamp;
-
-    protected $gateway = 'http://oapi.gxcards.com/';
 
     /**
      * 公告参数
@@ -43,9 +28,7 @@ class GxpayGateway implements GatewayInterface
     {
         $this->config = $config;
 
-        $this->timestamp = floor(microtime(true) * 1000) . '';
         $this->payload = [
-            'timestamp' => $this->timestamp,
             'partner' => $this->config->get('partner'),
             'version' => self::VERSION,
         ];
@@ -82,30 +65,36 @@ class GxpayGateway implements GatewayInterface
     }
 
     /**
+     * 商品池查询
+     * @return Collection
+     */
+    public function goodsPool()
+    {
+        $this->payload['bussinessParam'] = json_encode([
+            'type' => 1
+        ]);
+
+        return Support::requestNative('goods_poll',
+            $this->payload,
+            $this->config->get('desKey'),
+            $this->config->get('desIv')
+        );
+    }
+
+    /**
      * 查询余额
      * @param array $args
      * @return mixed
      */
-    public function rest(...$args)
+    public function rest($args)
     {
-        $args = func_get_arg(0);
-        $timestamp = $this->timestamp;
-        $url = $this->gateway .= md5('account_detail') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('desKey'), $this->config->get('desIv')));
-        try {
-            $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('desKey'), $this->config->get('desIv')), [
-                'headers' => ['Content-Type: application/json; charset=UTF-8']
-            ]);
-            $this->response = Response::response([
-                'status' => 1,
-                $response
-            ]);
-        } catch (\Exception $e) {
-            $this->response = Response::response([
-                'status' => -1,
-                'msg' => '查询失败！'
-            ]);
-        }
-        return $this;
+        //$args = func_get_arg(0);
+
+        return Support::requestNative('account_detail',
+            $this->payload,
+            $this->config->get('desKey'),
+            $this->config->get('desIv')
+        );
     }
 
     /**
@@ -113,89 +102,43 @@ class GxpayGateway implements GatewayInterface
      * @param $args
      * @return mixed
      */
-    public function search(...$args)
+    public function search($args)
     {
-        $args = func_get_arg(0);
-
-        $timestamp = $this->timestamp;
         $this->payload['bussinessParam'] = json_encode([
             'gxOrderNo' => $args['gxOrder']
         ]);
-        $url = $this->gateway .= md5('query_gas_order') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('desKey'), $this->config->get('desIv')));
-        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('desKey'), $this->config->get('desIv')), [
-            'headers' => ['Content-Type: application/json; charset=UTF-8']
-        ]);
-        if (isset($data['status']) && $response['status'] == 200) {
-            // -1 充值失败 6 充值成功 4 充值中
-            //$status = $response['data']['status'] == -1 ? 1 : ($response['data']['status'] == 6 ? 6 : 0);
-            //回调处理
-            $this->response = Response::response($this->post($this->config->get('retUrl'), [
-                'partnerId' => $args['orderId'],
-                'partnerNo' => $this->config->get('partner'),
-                'gxOrderNo' => $args['gxOrder'],
-                'status' => $response['data']['status'],
-                'sign' => md5('partnerId' . $args['orderId']
-                    . 'partnerNo' . $this->config->get('partner')
-                    . 'gxOrderNo' . $args['gxOrder']
-                    . 'status' . $response['data']['status'] . $this->config->get('desKey'))
-            ]));
-        } else {
-            $this->response = Response::response([
-                'status' => -1,
-                'code' => $response['status'],
-                'msg' => $response['statusText'],
-                'remark' => '订单信息查询失败'
-            ]);
-        }
-        return $this;
+        $this->payload['orderId'] = $args['orderId'];
+
+        return Support::callback('query_gas_order', $this->payload, $this->config);
     }
 
     /**
-     * @param array $payload
+     * @param $args
      * @return mixed
      */
-    public function pay(...$payload)
+    public function pay($args)
     {
-        $args = func_get_arg(0);
         $product = $this->getProducts([
             'cardNo' => $args['cardNo'], 'money' => $args['money']
         ]);
         if (empty($product)) {
-            $this->response = Response::response([
+            return Response::response([
                 'status' => -1,
                 'msg' => '不支持该产品充值！'
             ]);
-            return $this;
         }
-        $timestamp = $this->timestamp;
+
         $this->payload['bussinessParam'] = json_encode([
             'goodsId' => $product[0], //商品id
             'userAccount' => $args['cardNo'], //油卡号
             'partnerNo' => $args['orderId'],   //订单号
         ]);
-        $url = $this->gateway .= md5('buy_charge') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('desKey'), $this->config->get('desIv')));
 
-        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('desKey'), $this->config->get('desIv')), [
-            'headers' => ['Content-Type: application/json; charset=UTF-8']
-        ]);
-        if (isset($response['status']) && $response['status'] == '200') {
-            //$status = $response['data']['status'] == -1 ? 9 : ($response['data']['status'] == 6 ? 1 : 0);
-            $this->response = Response::response([
-                'status' => 1,
-                'paySn' => $response['data']['orderNo'], //回调订单号
-                'amount' => $args['money'],
-                'code' => GatewayInterface::STATUS_PROCESSING, //充值中
-                'msg' => $response['statusText'],
-            ]);
-        } else {
-            $this->response = Response::response([
-                'status' => -1,
-                'code' => $response['status'],
-                'msg' => $response['statusText'],
-                'remark' => "充值失败({$response['status']})，请联系客服手动充值"
-            ]);
-        }
-        return $this;
+        return Support::requestApi('buy_charge',
+            $this->payload,
+            $this->config->get('desKey'),
+            $this->config->get('desIv')
+        );
     }
 
     /**
@@ -205,7 +148,6 @@ class GxpayGateway implements GatewayInterface
     public function callback()
     {
         $request = Request::createFromGlobals()->request;
-        #$request = new Request();
         $response = [
             'partnerId' => $request->get('partnerId'),
             'partnerNo' => $request->get('partnerNo'),
@@ -215,14 +157,13 @@ class GxpayGateway implements GatewayInterface
             'sign' => $request->get('sign'),
         ];
         if ($this->verify($response))
-            $this->response = Response::response([
+            return Response::response([
                 'status' => 1,
                 'orderSn' => $response['partnerId'],
                 'code' => $response['status']
             ]);
         else
-            $this->response = Response::response();
-        return $this;
+            return Response::response();
     }
 
 
@@ -234,51 +175,23 @@ class GxpayGateway implements GatewayInterface
     public function verify($data)
     {
         $args = func_get_arg(0);
-        $appKey = $this->config->get('desKey');
-        $sign = $data['sign'];
-        unset($data['sign']);
-        $strKey = '';
-        foreach ($args as $key => $val) {
-            if (!empty($val) && !is_null($key))
-                $strKey .= $key . $val;
-        }
-        $strKey .= $appKey;
-        if (md5($strKey) === $sign)
-            return true;
-        return false;
+
+        return Support::verify($args, $this->config);
     }
 
     /**
-     * 可购买充值商品
-     * @return $this
+     * @param $name
+     * @param $arguments
+     * @return mixed
      */
-    public function goodsPool()
-    {
-        $timestamp = $this->timestamp;
-        $this->payload['bussinessParam'] = json_encode([
-            'type' => 1
-        ]);
-        $url = $this->gateway .= md5('query_gas_order') . '?t=' . urlencode(Support::encrypt3Des($timestamp, $this->config->get('desKey'), $this->config->get('desIv')));
-        $response = $this->post($url, Support::encrypt3Des(json_encode($this->payload), $this->config->get('desKey'), $this->config->get('desIv')), [
-            'headers' => ['Content-Type: application/json; charset=UTF-8']
-        ]);
-        if (isset($response['status']) && $response['status'] == 200) {
-            $this->response = Response::response($response['data']);
-        } else {
-            $this->response = Response::response();
-        }
-
-        return $this;
-    }
-
     public function __call($name, $arguments)
     {
         if (!method_exists($this, $name))
-            $this->response = Response::response([
+            return Response::response([
                 'status' => -1,
                 'msg' => "Method:{$name} Not Exists"
             ]);
 
-        return $this;
+        return $name($arguments);
     }
 }

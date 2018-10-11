@@ -20,20 +20,20 @@ interface GatewayInterface
      * @param array $args
      * @return mixed
      */
-    public function rest(...$args);
+    public function rest($args);
 
     /**
      * 查询订单
      * @param $args
      * @return mixed
      */
-    public function search(...$args);
+    public function search($args);
 
     /**
      * @param array $payload
      * @return mixed
      */
-    public function pay(...$payload);
+    public function pay($payload);
 
     /**
      * 回调处理

@@ -37,7 +37,7 @@ trait HttpRequestTraits
      *
      * @return array|string
      */
-    protected function post($endpoint, $data = [], $options = [])
+    protected function post($endpoint, $data = '', $options = [])
     {
         if (!is_array($data)) {
             $options['body'] = $data;

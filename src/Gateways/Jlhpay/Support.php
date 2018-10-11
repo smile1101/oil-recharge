@@ -2,10 +2,94 @@
 
 namespace Recharge\Gateways\Jlhpay;
 
+use Recharge\Contracts\GatewayInterface;
+use Recharge\Supports\Config;
 use Recharge\Supports\Response;
+use Recharge\Gateways\Support as SupportIterate;
+use Recharge\Traits\HttpRequestTraits;
 
-class Support
+class Support extends SupportIterate
 {
+
+    use HttpRequestTraits;
+
+    protected static $gateway = 'http://182.92.157.25:8160';
+
+    /**
+     * request an api
+     * @param $endpoint
+     * @param $params
+     * @return \Recharge\Supports\Collection
+     */
+    public static function requestApi($endpoint, $params)
+    {
+        $endpoint = self::$gateway . $endpoint;
+
+        $response = self::getInstance()->get($endpoint, self::sign($params)->toArray(), [
+            'Accept:application/json;charset=UTF-8'
+        ]);
+
+        if ($response['status'] == 'success' && $response['code'] == '00') {
+            return Response::response([
+                'status' => 1,
+                'paySn' => $response['bizOrderId'],
+                'code' => GatewayInterface::STATUS_PROCESSING //充值中
+            ]);
+        } else {
+            return Response::response([
+                'status' => -1,
+                'msg' => "充值失败({$response['code']})，请联系客服手动充值",
+            ]);
+        }
+    }
+
+    /**
+     * exec a request and callback
+     * @param $endpoint
+     * @param $params
+     * @param Config $config
+     * @return \Recharge\Supports\Collection
+     */
+    public static function callback($endpoint, $params, Config $config)
+    {
+        $endpoint = self::$gateway . $endpoint;
+
+        $response = self::getInstance()->get($endpoint, self::sign($params)->toArray(), [
+            'Accept:application/json;charset=UTF-8'
+        ]);
+
+        if ($response['status'] == 'success' && $response['code'] == '00') {
+            switch ($response['data']['status']) {
+                case '0':
+                case '1':
+                case '4':
+                case '9':
+                    $ret = Response::response(['code' => GatewayInterface::STATUS_PROCESSING]);
+                    break;
+                case '2':
+                    $ret = Response::response(['code' => GatewayInterface::STATUS_SUCCESS]);
+                    break;
+                default:
+                    $ret = Response::response(['code' => GatewayInterface::STATUS_FAIL]);
+                    break;
+            }
+
+            if ($ret['code'] == GatewayInterface::STATUS_SUCCESS || $ret['code'] == GatewayInterface::STATUS_FAIL) {
+                return Response::response(self::getInstance()->get($config->get('retUrl'), [
+                    'userId' => $config->get('userId'),
+                    'bizId' => $response['data']['id'],
+                    'ejId' => $response['data']['id'],
+                    'downstreamSerialno' => $response['data']['serialno'],
+                    'code' => $response['data']['status'],
+                    'sign' => md5($response['data']['id'] . $response['data']['serialno'] . $response['data']['id'] .
+                        $response['data']['status'] . $config->get('userId') . $config->get('secret'))
+                ]));
+            }
+        }
+
+        return Response::response($response);
+    }
+
     /**
      * 签名并返回
      * @param $params
