@@ -43,20 +43,20 @@ $playod = [
     'cardNo' => '1000111111111111111', //加油卡号
     'money' => '100', //充值金额
 ]; 
-$response = $gxpay::gxpay('gxpay')->pay($playod);
+$response = $gxpay::gxpay($config)->pay($playod);
 
 echo $response->status; //成功 -1: 表示失败 
 echo $response->msg; //错误信息
 
 #公象回调处理
-$response = $gxpay::gxpay('gxpay')->callback();
+$response = $gxpay::gxpay($config)->callback();
 //$response[status] = 1 表示成功
 
 #自己处理回调验签
 $request = $_POST;//获取
 //laravel
 $request = request()->all();
-$verify = $gxpay::gxpay('gxpay')->verify($request);
+$verify = $gxpay::gxpay($config)->verify($request);
 var_export($verify); //true 成功 false 失败
 
 #二、欧飞充值
