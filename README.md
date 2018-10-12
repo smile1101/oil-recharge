@@ -22,6 +22,8 @@ $ composer require zlwleng/oil-recharge
 
 - callback() 回调结果处理
 
+- verify($data) 验签
+
 - ...
 
 ####辅助函数
