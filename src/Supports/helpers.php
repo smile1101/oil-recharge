@@ -13,6 +13,7 @@ if (!function_exists('zlw_recharge')) {
      * @param string $gateway 驱动类
      * @param array $config  公共配置参数
      * @param array $payload 业务参数
+     * @throws Exception
      * @return Exception|\Recharge\Supports\Collection|mixed
      */
     function zlw_recharge($driver, $gateway, $config = [], $payload = [])
@@ -33,6 +34,7 @@ if (!function_exists('zlw_callback')) {
      * @param string $driver 驱动目录
      * @param string $gateway 驱动类
      * @param array $config  公共配置参数
+     * @throws Exception
      * @return Exception|\Recharge\Supports\Collection|mixed
      */
     function zlw_callback($driver, $gateway, $config = [])
@@ -53,6 +55,7 @@ if (!function_exists('zlw_methods')) {
      * @param string $func 驱动方法
      * @param array $config  公共配置参数
      * @param array $payload 业务方法
+     * @throws Exception
      * @return Exception|\Recharge\Supports\Collection|mixed
      */
     function zlw_methods($driver, $gateway, $func, $config = [], $payload = [])

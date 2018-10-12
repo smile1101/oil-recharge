@@ -16,12 +16,6 @@ abstract class Support
     private static $instance;
 
     /**
-     * request base gateway | url
-     * @var string
-     */
-    protected static $gateway = '';
-
-    /**
      * Bootstrap.
      */
     private function __construct()

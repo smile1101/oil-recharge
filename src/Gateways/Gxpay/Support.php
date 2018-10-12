@@ -10,9 +10,11 @@ use Recharge\Supports\Response;
 class Support extends SupportIterate
 {
 
-    protected static $gateway = 'http://oapi.gxcards.com/';
-
-    //protected static $gateway = 'http://boapi.gxcards.com/';
+    /**
+     * http://boapi.gxcards.com/
+     * @var string
+     */
+    protected $baseUri = 'http://oapi.gxcards.com/';
 
     /**
      * request an api
@@ -26,7 +28,7 @@ class Support extends SupportIterate
     {
         $timestamp = floor(microtime(true) * 1000) . '';
         $params['timestamp'] = $timestamp;
-        $endpoint = self::$gateway . md5($endpoint) .
+        $endpoint = md5($endpoint) .
             '?t=' .
             urlencode(self::encrypt3Des($timestamp, $desKey, $desIv));
 
@@ -62,7 +64,7 @@ class Support extends SupportIterate
     {
         $timestamp = floor(microtime(true) * 1000) . '';
         $params['timestamp'] = $timestamp;
-        $endpoint = self::$gateway . md5($endpoint) .
+        $endpoint = md5($endpoint) .
             '?t=' .
             urlencode(self::encrypt3Des($timestamp, $config->get('desKey'), $config->get('desIv')));
         $orderId = $params['orderId'];
@@ -112,7 +114,7 @@ class Support extends SupportIterate
     {
         $timestamp = floor(microtime(true) * 1000) . '';
         $params['timestamp'] = $timestamp;
-        $endpoint = self::$gateway . md5($endpoint) .
+        $endpoint = md5($endpoint) .
             '?t=' .
             urlencode(self::encrypt3Des($timestamp, $desKey, $desIv));
         $response = self::getInstance()->post($endpoint, self::encrypt3Des(json_encode($params), $desKey, $desIv), [

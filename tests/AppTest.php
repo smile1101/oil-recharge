@@ -12,6 +12,9 @@ use Recharge\App;
  */
 class AppTest extends TestCase
 {
+    /**
+     * @throws \Exception
+     */
     public function testBuild()
     {
         //话费充值查询
@@ -75,13 +78,13 @@ class AppTest extends TestCase
         ];
         //$response = zlw_recharge('ofpay', 'ofpay', $config, $payload);
         $response = zlw_methods('ofpay', 'ofpay', 'rest', $config);*/
-//        $config = [
-//            'partner' => 'test',
-//            'desKey' => 'qwertyuioppoiuytrewqasdf',
-//            'desIv' => '19283746', //签名key
-//            'retUrl' => '', //回调地址
-//        ];
-//        $response = zlw_methods('gxpay', 'gxpay', 'rest', $config);
+        $config = [
+            'partner' => 'test',
+            'desKey' => 'qwertyuioppoiuytrewqasdf',
+            'desIv' => '19283746', //签名key
+            'retUrl' => '', //回调地址
+        ];
+        $response = zlw_methods('gxpay', 'gxpay', 'rest', $config);
 
         $config = [
             'userId' => 'A520',
@@ -90,7 +93,7 @@ class AppTest extends TestCase
         ];
         //$response = zlw_methods('jlhpay', 'jlhpay', 'rest', $config);
 
-        $response = zlw_callback('jlhpay', 'jlhpay', $config);
+        //$response = zlw_callback('jlhpay', 'jlhpay', $config);
         var_export($response);
     }
 }

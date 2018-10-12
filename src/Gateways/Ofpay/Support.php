@@ -9,7 +9,7 @@ use Recharge\Gateways\Support as SupportIterate;
 class Support extends SupportIterate
 {
 
-    protected static $gateway = 'http://apitest.ofpay.com';
+    protected $baseUri = 'http://A1403742.api2.ofpay.com';
 
     /**
      * request an api and deal result
@@ -22,7 +22,7 @@ class Support extends SupportIterate
     {
         if (!empty($strKey))
             $params = self::sign($params, $strKey)->toArray();
-        $endpoint = self::$gateway . $endpoint . http_build_query($params);
+        $endpoint = $endpoint . http_build_query($params);
         $response = self::getInstance()->post($endpoint);
         if ((int)$response['retcode'] === 1) {
             return Response::response([
@@ -49,7 +49,7 @@ class Support extends SupportIterate
     {
         if (!empty($strKey))
             $params = self::sign($params, $strKey)->toArray();
-        $endpoint = self::$gateway . $endpoint . http_build_query($params);
+        $endpoint = $endpoint . http_build_query($params);
         $response = self::getInstance()->post($endpoint);
         if ($response['retcode'] == '1') {
             $ret = ['status' => $response['game_state']];
@@ -78,7 +78,7 @@ class Support extends SupportIterate
         if (!empty($strKey))
             $params = self::sign($params, $strKey)->toArray();
 
-        $endpoint = self::$gateway . $endpoint . http_build_query($params);
+        $endpoint = $endpoint . http_build_query($params);
 
         return Response::response(self::getInstance()->post($endpoint));
     }

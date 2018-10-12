@@ -6,14 +6,11 @@ use Recharge\Contracts\GatewayInterface;
 use Recharge\Supports\Config;
 use Recharge\Supports\Response;
 use Recharge\Gateways\Support as SupportIterate;
-use Recharge\Traits\HttpRequestTraits;
 
 class Support extends SupportIterate
 {
 
-    use HttpRequestTraits;
-
-    protected static $gateway = 'http://182.92.157.25:8160';
+    protected $baseUri = 'http://182.92.157.25:8160';
 
     /**
      * request an api
@@ -23,8 +20,6 @@ class Support extends SupportIterate
      */
     public static function requestApi($endpoint, $params)
     {
-        $endpoint = self::$gateway . $endpoint;
-
         $response = self::getInstance()->get($endpoint, self::sign($params)->toArray(), [
             'Accept:application/json;charset=UTF-8'
         ]);
@@ -52,8 +47,6 @@ class Support extends SupportIterate
      */
     public static function callback($endpoint, $params, Config $config)
     {
-        $endpoint = self::$gateway . $endpoint;
-
         $response = self::getInstance()->get($endpoint, self::sign($params)->toArray(), [
             'Accept:application/json;charset=UTF-8'
         ]);
@@ -98,8 +91,6 @@ class Support extends SupportIterate
      */
     public static function requestNative($endpoint, $params)
     {
-        $endpoint = self::$gateway . $endpoint;
-
         $response = self::getInstance()->get($endpoint, self::sign($params)->toArray(), [
             'Accept:application/json;charset=UTF-8'
         ]);
