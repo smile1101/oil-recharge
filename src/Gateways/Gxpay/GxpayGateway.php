@@ -83,13 +83,10 @@ class GxpayGateway implements GatewayInterface
 
     /**
      * 查询余额
-     * @param array $args
      * @return mixed
      */
-    public function rest($args)
+    public function rest()
     {
-        //$args = func_get_arg(0);
-
         return Support::requestNative('account_detail',
             $this->payload,
             $this->config->get('desKey'),
@@ -174,9 +171,19 @@ class GxpayGateway implements GatewayInterface
      */
     public function verify($data)
     {
-        $args = func_get_arg(0);
-
-        return Support::verify($args, $this->config);
+        $request = Request::createFromGlobals();
+        $params = !empty($data) && is_array($data) ? $data : $request->request->all();
+        if (empty($params) || !isset($params['sign']))
+            return false;
+        $strKey = '';
+        foreach ($params as $key => $val) {
+            if ($key != 'sign' && !empty($val) && !is_null($key))
+                $strKey .= $key . $val;
+        }
+        $strKey .= $this->config->get('desKey');
+        if (md5($strKey) === $params['sign'])
+            return true;
+        return false;
     }
 
     /**

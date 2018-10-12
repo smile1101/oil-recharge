@@ -77,15 +77,32 @@ class Support extends SupportIterate
             if ($ret['code'] == GatewayInterface::STATUS_SUCCESS || $ret['code'] == GatewayInterface::STATUS_FAIL) {
                 return Response::response(self::getInstance()->get($config->get('retUrl'), [
                     'userId' => $config->get('userId'),
-                    'bizId' => $response['data']['id'],
-                    'ejId' => $response['data']['id'],
-                    'downstreamSerialno' => $response['data']['serialno'],
-                    'code' => $response['data']['status'],
+                    'bizId' => $response['data']['bizId'], //业务编号
+                    'ejId' => $response['data']['ejId'],   //平台方订单号
+                    'downstreamSerialno' => $response['data']['serialno'], //商户订单号
+                    'code' => $response['data']['status'], //2成功 3：失败
                     'sign' => md5($response['data']['id'] . $response['data']['serialno'] . $response['data']['id'] .
                         $response['data']['status'] . $config->get('userId') . $config->get('secret'))
                 ]));
             }
         }
+
+        return Response::response($response);
+    }
+
+    /**
+     * other request api
+     * @param $endpoint
+     * @param $params
+     * @return \Recharge\Supports\Collection
+     */
+    public static function requestNative($endpoint, $params)
+    {
+        $endpoint = self::$gateway . $endpoint;
+
+        $response = self::getInstance()->get($endpoint, self::sign($params)->toArray(), [
+            'Accept:application/json;charset=UTF-8'
+        ]);
 
         return Response::response($response);
     }

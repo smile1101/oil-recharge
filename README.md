@@ -10,6 +10,28 @@ Install the latest version with
 $ composer require zlwleng/oil-recharge
 ```
 
+####可调方法
+
+- pay($payload) 调起支付
+
+- getProducts($args) 获取可充值产品列表
+
+- rest($args = []) 查询余额
+
+- search($args) 订单查询
+
+- callback() 回调结果处理
+
+- ...
+
+####辅助函数
+
+- zlw_recharge($driver, $gateway, $config = [], $payload = []) 充值辅助函数
+
+- zlw_callback($driver, $gateway, $config = []) 回调辅助函数
+
+- zlw_methods($driver, $gateway, $func, $config = [], $payload = []) 自定义调用辅助函数
+
 #####公共状态定义
 
 字段 | 类型 | 描述
@@ -100,6 +122,44 @@ $response = $ofpay::flow($config)->pay($playod);
 $response = $ofpay::flow($config)->callback();
 
 // $response 处理结果
+
+#5.使用辅助函数
+
+#1) 公象加油
+$config = [
+    'partner' => 'A12345',
+    'desKey' => '12345678',
+    'desIv' => '123', //签名key
+    'retUrl' => '', //回调地址
+];
+$playod = [
+    'cardNo' => '1000111111111111111', //加油卡号
+    'orderId' => 'OF123456', //订单号
+    'money' => 100, //充值金额 ￥：100
+];
+$response = zlw_recharge('gxpay', 'gxpay', $config, $playod);
+
+#2)欧飞话费充值
+$config = [
+    'userId' => 'A08566',
+    'userPws' => '4c625b7861a92c7971cd2029c2fd3c4a',
+    'strKey' => '123', //签名key
+    'retUrl' => 'OFCARD', //回调地址 针对业务场景可调整
+];
+$playod = [
+    'cardNo' => '13388888888', //手机号
+    'orderId' => 'OF123456', //订单号
+    'money' => 100, //充值金额 ￥：100
+];
+$response = zlw_recharge('ofpay', 'phone', $config, $playod);
+#或者
+$response = zlw_methods('ofpay', 'phone', 'pay', $config, $playod);
+#二者等价
+
+$callback = zlw_callback('ofpay', 'phone', $config); //回调
+
+#余额查询
+$response = zlw_methods('ofpay', 'phone', 'rest', $config);
 
 ```   
 

@@ -59,12 +59,16 @@ class JlhpayGateway implements GatewayInterface
 
     /**
      * 查询余额
-     * @param array $args
      * @return mixed
      */
-    public function rest($args)
+    public function rest()
     {
+        $params = [
+            'userId' => $this->config->get('userId'),
+            'secret' => $this->config->get('secret'),
+        ];
 
+        return Support::requestNative('/unicomAync/queryBalance.do?', $params);
     }
 
     /**
@@ -110,7 +114,7 @@ class JlhpayGateway implements GatewayInterface
             'serialno' => $args['orderId'],
             'dtCreate' => date('YmdHis'),
         ];
-        
+
         return Support::requestApi('/unicomAync/buy.do?', $params);
     }
 
@@ -128,13 +132,11 @@ class JlhpayGateway implements GatewayInterface
             'downstreamSerialno' => $request->get('downstreamSerialno'),
             'status' => $request->get('code')
         ];
-        $sign = strtolower($request->get('sign'));
-        if ($sign != md5($params['bizId'] . $params['downstreamSerialno'] . $params['ejId'] . $params['status'] . $params['userId'] . $this->config->get('secret'))) {
+        if ($this->verify($request->all()) === false)
             return Response::response([
                 'status' => -1,
                 'msg' => '验签失败'
             ]);
-        }
         switch ($params['status']) {
             case '2':
                 return Response::response([
@@ -162,7 +164,24 @@ class JlhpayGateway implements GatewayInterface
      */
     public function verify($data)
     {
-        // TODO: Implement verify() method.
+        $request = Request::createFromGlobals();
+        $data = !empty($data) && is_array($data) ? $data : $request->request->all();
+        if (empty($data) || !isset($data['sign']))
+            return false;
+        ksort($data);
+        reset($data);
+        $strSign = '';
+        foreach ($data as $key => $value) {
+            if ($key != 'sign' && !is_null($value) && !empty($value)) {
+                $strSign .= $value;
+            }
+        }
+
+        $strSign .= $this->config->get('secret');
+
+        if (strtolower($data['sign']) === md5($strSign))
+            return true;
+        return false;
     }
 
     public function __call($name, $arguments)

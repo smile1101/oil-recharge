@@ -138,26 +138,4 @@ class Support extends SupportIterate
             0, $desIv
         );
     }
-
-    /**
-     * verify params
-     * @param array $params
-     * @param Config $config
-     * @return bool
-     */
-    public static function verify($params = [], Config $config)
-    {
-        $appKey = $config->get('desKey');
-        $sign = $params['sign'];
-        unset($params['sign']);
-        $strKey = '';
-        foreach ($params as $key => $val) {
-            if (!empty($val) && !is_null($key))
-                $strKey .= $key . $val;
-        }
-        $strKey .= $appKey;
-        if (md5($strKey) === $sign)
-            return true;
-        return false;
-    }
 }

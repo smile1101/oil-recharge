@@ -182,12 +182,17 @@ class FlowGateway implements GatewayInterface
 
     /**
      * 查询余额
-     * @param array $args
      * @return mixed
      */
-    public function rest($args)
+    public function rest()
     {
-        // TODO: Implement rest() method.
+        $params = [
+            'userid' => $this->config->get('userId'),
+            'userpws' => $this->config->get('userPws'),
+            'version' => self::VERSION
+        ];
+
+        return Support::requestOther('/newqueryuserinfo.do?', $params);
     }
 
     /**
@@ -197,7 +202,18 @@ class FlowGateway implements GatewayInterface
      */
     public function search($args)
     {
+        $params = [
+            'userid' => $this->config->get('userId'),
+            'userpws' => $this->config->get('userPws'),
+            'sporder_id' => $args['orderId'],
+            'version' => self::VERSION
+        ];
 
+        return Support::callback('/queryOrderInfo.do?',
+            $params,
+            $this->config->get('strKey'),
+            $this->config->get('retUrl')
+        );
     }
 
     /**
@@ -208,7 +224,7 @@ class FlowGateway implements GatewayInterface
     public function pay($payload)
     {
         $product = $this->getProducts(['cardNo' => $payload['cardNo'], 'amount' => $payload['amount']]);
-        if(!$product) {
+        if (!$product) {
             return Response::response([
                 'status' => -1,
                 'msg' => '暂不支持的充值金额'
@@ -259,7 +275,10 @@ class FlowGateway implements GatewayInterface
      */
     public function verify($data)
     {
-        // TODO: Implement verify() method.
+        $request = Request::createFromGlobals();
+        $data = !empty($data) && is_array($data) ?? $request->request->all();
+
+        return true;
     }
 
     /**

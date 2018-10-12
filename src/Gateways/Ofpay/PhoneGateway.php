@@ -55,12 +55,17 @@ class PhoneGateway implements GatewayInterface
 
     /**
      * 查询余额
-     * @param array $args
      * @return mixed
      */
-    public function rest($args)
+    public function rest()
     {
+        $params = [
+            'userid' => $this->config->get('userId'),
+            'userpws' => $this->config->get('userPws'),
+            'version' => self::VERSION
+        ];
 
+        return Support::requestOther('/newqueryuserinfo.do?', $params);
     }
 
     /**
@@ -164,7 +169,10 @@ class PhoneGateway implements GatewayInterface
      */
     public function verify($data)
     {
+        $request = Request::createFromGlobals();
+        $data = !empty($data) && is_array($data) ?? $request->request->all();
 
+        return true;
     }
 
     /**

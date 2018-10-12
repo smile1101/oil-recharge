@@ -17,10 +17,9 @@ interface GatewayInterface
 
     /**
      * 查询余额
-     * @param array $args
      * @return mixed
      */
-    public function rest($args);
+    public function rest();
 
     /**
      * 查询订单
