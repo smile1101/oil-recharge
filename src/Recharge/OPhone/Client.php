@@ -15,7 +15,7 @@ class Client extends BasicClient implements Container
      * @var string
      */
     protected $baseUri = 'http://A1403742.api2.ofpay.com';
-    
+
     /**
      * get recharge products
      * @param array $params
