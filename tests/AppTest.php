@@ -3,7 +3,7 @@
 namespace Recharge\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Recharge\App;
+use Recharge\Factory;
 
 /**
  * Class AppTest
@@ -17,83 +17,21 @@ class AppTest extends TestCase
      */
     public function testBuild()
     {
-        //话费充值查询
-//        $response = App::driver('ofpay')::phone([
-//           /* 'partner' => 'A12345',
-//            'desKey' => '12345678',
-//            'desIv' => '123', //签名key
-//            'retUrl' => '', //回调地址*/
-//            'userid' => 'A08566',
-//            'userpws' => '4c625b7861a92c7971cd2029c2fd3c4a',
-//            'strKey' => 'OFCARD',
-//            'retUrl' => '',
-//        ])->search([
-//            'orderId' => mt_rand(111111111, 999999999), //订单号
-//            //'cardNo' => '90011111', //加油卡号
-//            //'money' => '100', //充值金额
-//            //'retUrl' => ''
-//        ]);
-        //话费充值
-//        $response = App::driver('ofpay')::phone([
-//            /* 'partner' => 'A12345',
-//             'desKey' => '12345678',
-//             'desIv' => '123', //签名key
-//             'retUrl' => '', //回调地址*/
-//            'userid' => 'A08566',
-//            'userpws' => '4c625b7861a92c7971cd2029c2fd3c4a',
-//            'strKey' => 'OFCARD',
-//            'retUrl' => '',
-//        ])->search([
-//            'orderId' => mt_rand(111111111, 999999999), //订单号
-//            'cardNo' => '90011111', //加油卡号
-//            'money' => '100', //充值金额
-//        ]);
-        //加油直充
-//        $response = App::driver('jlhpay')::jlhpay([
-//             /*'partner' => 'test',
-//             'desKey' => 'qwertyuioppoiuytrewqasdf',
-//             'desIv' => '19283746', //签名key
-//             'retUrl' => '', //回调地址*/
-//            /*'userid' => 'A08566',
-//            'userpws' => '4c625b7861a92c7971cd2029c2fd3c4a',
-//            'strKey' => 'OFCARD',
-//            'retUrl' => '',*/
-//            'userId' => 'A888',
-//            'secret' => 'e59e98638eda244764'
-//        ])->search([
-//            'orderId' => mt_rand(111111111, 999999999), //订单号
-//            'cardNo' => '100011111', //加油卡号
-//            'money' => '100', //充值金额
-//        ]);
-        /*$config = [
-            'userId' => 'A08566',
-            'userPws' => '4c625b7861a92c7971cd2029c2fd3c4a',
-            'strKey' => 'OFCARD',
-            'retUrl' => ''
+        date_default_timezone_set('PRC');
+        $config = [
+            'appId' => 'A08566',  //partner
+            'appKey' => '4c625b7861a92c7971cd2029c2fd3c4a',
+            'appIv' => '19283746', //desiv
+            'appStr' => 'OFCARD',
+            'retUrl' => '/notify',
+            'version' => '6.0'
         ];
         $payload = [
-            'orderId' => mt_rand(111111111, 999999999), //订单号
-            'cardNo' => '100011111', //加油卡号
-            'money' => '100', //充值金额
+            'orderId' => mt_rand(111111, 999999),
+            'cardNo' => '13281868806',
+            'money' => 50
         ];
-        //$response = zlw_recharge('ofpay', 'ofpay', $config, $payload);
-        $response = zlw_methods('ofpay', 'ofpay', 'rest', $config);*/
-        $config = [
-            'partner' => 'test',
-            'desKey' => 'qwertyuioppoiuytrewqasdf',
-            'desIv' => '19283746', //签名key
-            'retUrl' => '', //回调地址
-        ];
-        $response = zlw_methods('gxpay', 'gxpay', 'rest', $config);
-
-        $config = [
-            'userId' => 'A520',
-            'secret' => 'e59e98638eda244764d202b77ea7382c973a',
-            'retUrl' => '', //回调地址
-        ];
-        //$response = zlw_methods('jlhpay', 'jlhpay', 'rest', $config);
-
-        //$response = zlw_callback('jlhpay', 'jlhpay', $config);
-        var_export($response);
+        $app = Factory::recharge($config);
+        var_export($app->flow->pay($payload));
     }
 }

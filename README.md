@@ -9,30 +9,8 @@ Install the latest version with
 ```bash
 $ composer require zlwleng/oil-recharge
 ```
-
-####可调方法
-
-- pay($payload) 调起支付
-
-- getProducts($args) 获取可充值产品列表
-
-- rest($args = []) 查询余额
-
-- search($args) 订单查询
-
-- callback() 回调结果处理
-
-- verify($data) 验签
-
-- ...
-
-####辅助函数
-
-- zlw_recharge($driver, $gateway, $config = [], $payload = []) 充值辅助函数
-
-- zlw_callback($driver, $gateway, $config = []) 回调辅助函数
-
-- zlw_methods($driver, $gateway, $func, $config = [], $payload = []) 自定义调用辅助函数
+#### version
+- 2.0.1
 
 #####公共状态定义
 
@@ -48,123 +26,61 @@ msg           | string        | 描述信息
 ```php
 <?php
 
-use Recharge\App;
-
-#加油卡直充 最小配置参数
-
-#公象 加油直充示例
-//公共参数
+/**
+ * 欧飞公共参数配置
+ * 允许留空
+ */
 $config = [
-    'partner' => 'A12345',
-    'desKey' => '12345678',
-    'desIv' => '123', //签名key
-    'retUrl' => '', //回调地址
-]; 
-$gxpay = App::driver('gxpay');
-//业务参数
-$playod = [
-    'orderId' => 'GX82252154', //订单号
-    'cardNo' => '1000111111111111111', //加油卡号
-    'money' => '100', //充值金额
-]; 
-$response = $gxpay::gxpay($config)->pay($playod);
+    'appId' => 'A08566',  
+    'appKey' => '4c625b7861a92c7971cd2029c2fd3c4a',
+    'appIv' => '',
+    'appStr' => 'OFCARD',
+    'retUrl' => '/notify',
+    'version' => '6.0'
+];
+$app = \Recharge\Factory::recahrge($config);
+#加油直充
+$payload = [
+    'orderId' => 'test' . mt_rand(111111, 999999),
+    'cardNo' => '13281888888',
+    'money' => 50
+];
+$response = $app->ofpay->pay($payload);
+#话费充值
+$payload = [
+    'orderId' => 'test' . mt_rand(111111, 999999),
+    'cardNo' => '1000113200018313897',
+    'money' => 50
+];
+$response = $app->phone->pay($payload);
+#流量充值
+$response = $app->flow->pay($payload);
 
-echo $response->status; //成功 -1: 表示失败 
-echo $response->msg; //错误信息
-
-#公象回调处理
-$response = $gxpay::gxpay($config)->callback();
-//$response[status] = 1 表示成功
-
-#自己处理回调验签
-$request = $_POST;//获取
-//laravel
-$request = request()->all();
-$verify = $gxpay::gxpay($config)->verify($request);
-var_export($verify); //true 成功 false 失败
-
-#二、欧飞充值
-#公共参数
+/**
+ * 公象配置
+ */
 $config = [
-    'userId' => 'A08566',
-    'userPws' => '4c625b7861a92c7971cd2029c2fd3c4a',
-    'strKey' => '123', //签名key
-    'retUrl' => 'OFCARD', //回调地址 针对业务场景可调整
+    'appId' => 'gxTest',  
+    'appKey' => '4c625b7861a92c7971cd2029c2fd3c4a',
+    'appIv' => '19283746',
+    'appStr' => '',
+    'retUrl' => '/notify',
+    'version' => '6.0'
 ];
-$ofpay = App::driver('ofpay');
-#1.加油直充
-#业务参数
-$playod = [
-    'cardNo' => '1000111111111111111', //加油卡号
-    'orderId' => 'OF123456', //订单号
-    'money' => 100, //充值金额 ￥：100
-];
-$response = $ofpay::ofpay($config)->pay($playod);
-// $response 
-
-#2.话费充值
-#业务参数
-$playod = [
-    'cardNo' => '13388888888', //手机号
-    'orderId' => 'OF123456', //订单号
-    'money' => 100, //充值金额 ￥：100
-];
-$response = $ofpay::phone($config)->pay($playod);
-
-#3.流量充值
-#业务参数
-$playod = [
-    'cardNo' => '13388888888', //手机号
-    'orderId' => 'OF123456', //订单号
-    'money' => 100, //充值金额 ￥：100
-];
-$response = $ofpay::flow($config)->pay($playod);
-
-#4.流量充值异步回调处理
-$response = $ofpay::flow($config)->callback();
-
-// $response 处理结果
-
-#5.使用辅助函数
-
-#1) 公象加油
+/**
+ * 玖零逅配置
+ */
 $config = [
-    'partner' => 'A12345',
-    'desKey' => '12345678',
-    'desIv' => '123', //签名key
-    'retUrl' => '', //回调地址
+    'appId' => 'jlhTest',  
+    'appKey' => '4c625b7861a92c7971cd2029c2fd3c4a',
+    'appIv' => '',
+    'appStr' => '',
+    'retUrl' => '/notify',
+    'version' => ''
 ];
-$playod = [
-    'cardNo' => '1000111111111111111', //加油卡号
-    'orderId' => 'OF123456', //订单号
-    'money' => 100, //充值金额 ￥：100
-];
-$response = zlw_recharge('gxpay', 'gxpay', $config, $playod);
-
-#2)欧飞话费充值
-$config = [
-    'userId' => 'A08566',
-    'userPws' => '4c625b7861a92c7971cd2029c2fd3c4a',
-    'strKey' => '123', //签名key
-    'retUrl' => 'OFCARD', //回调地址 针对业务场景可调整
-];
-$playod = [
-    'cardNo' => '13388888888', //手机号
-    'orderId' => 'OF123456', //订单号
-    'money' => 100, //充值金额 ￥：100
-];
-$response = zlw_recharge('ofpay', 'phone', $config, $playod);
-#或者
-$response = zlw_methods('ofpay', 'phone', 'pay', $config, $playod);
-#二者等价
-
-$callback = zlw_callback('ofpay', 'phone', $config); //回调
-
-#余额查询
-$response = zlw_methods('ofpay', 'phone', 'rest', $config);
-
+##其他选择
+#gxpay::公象加油直充 jlhpay::玖零逅加油直充
 ```   
-
 ## About
 - 目前支持 公象 玖零逅 欧飞
 - 文档持续更新中
