@@ -1,6 +1,6 @@
 <?php
 
-namespace Recharge\Oil\Ofpay;
+namespace Recharge\Recharge\Ofpay;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
