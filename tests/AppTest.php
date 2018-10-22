@@ -27,11 +27,15 @@ class AppTest extends TestCase
             'version' => '6.0'
         ];
         $payload = [
-            'orderId' => mt_rand(111111, 999999),
-            'cardNo' => '13281868806',
-            'money' => 50
+            'orderId' => date('YmdHis'),
+            'cardNo' => '1412025254',
+            'money' => 50,
+            'type' => 'QQ'
+        ];
+        $params = [
+            'orderId' => '20181022154740'
         ];
         $app = Factory::recharge($config);
-        var_export($app->flow->pay($payload));
+        var_export($app->game->callback());
     }
 }
