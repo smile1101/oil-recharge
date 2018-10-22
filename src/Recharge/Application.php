@@ -20,6 +20,7 @@ class Application extends ServiceContainer
         OPhone\ServiceProvide::class,
         OFlow\ServiceProvide::class,
         Jlhpay\ServiceProvide::class,
+        OGame\ServiceProvide::class,
     ];
 
     /**

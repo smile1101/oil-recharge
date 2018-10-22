@@ -150,7 +150,7 @@ class Client extends BasicClient implements Container
      */
     public function callback()
     {
-        $request = $this->app['result']->request;
+        $request = $this->app['request']->request;
         $response = [
             'orderSn' => $request->get('sporder_id'),
             'code' => $request->get('ret_code'),
