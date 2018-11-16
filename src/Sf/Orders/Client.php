@@ -24,51 +24,34 @@ class Client extends BasicClient
         $data = $this->toXml([
             'Order' => [
                 [
-                    'orderid' => $order['orderId'],
+                    'orderid' => $order['order']['orderId'],
                     'is_gen_bill_no' => 1, //返回运单号
 
-                    'j_company' => $order['fromCompany'],
-                    'j_contact' => $order['fromContact'],
-                    'j_tel' => $order['fromTel'],
-                    'j_province' => $order['fromProvince'],
-                    'j_city' => $order['fromCity'],
-                    'j_county' => $order['fromCounty'],
-                    'j_address' => $order['fromAddress'],
+                    'j_company' => $order['order']['fromCompany'],
+                    'j_contact' => $order['order']['fromContact'],
+                    'j_tel' => $order['order']['fromTel'],
+                    'j_province' => $order['order']['fromProvince'],
+                    'j_city' => $order['order']['fromCity'],
+                    'j_county' => $order['order']['fromCounty'],
+                    'j_address' => $order['order']['fromAddress'],
 
-                    'd_company' => $order['toCompany'],
-                    'd_contact' => $order['toContact'],
-                    'd_tel' => $order['toTel'],
-                    'd_province' => $order['toProvince'],
-                    'd_city' => $order['toCity'],
-                    'd_county' => $order['toCounty'],
-                    'd_address' => $order['toAddress'],
+                    'd_company' => $order['order']['toCompany'],
+                    'd_contact' => $order['order']['toContact'],
+                    'd_tel' => $order['order']['toTel'],
+                    'd_province' => $order['order']['toProvince'],
+                    'd_city' => $order['order']['toCity'],
+                    'd_county' => $order['order']['toCounty'],
+                    'd_address' => $order['order']['toAddress'],
 
-                    'custid' => isset($order['custId']) ? $order['custId'] : '', //顺丰月结卡号
-                    'pay_method' => isset($order['payMethod']) ? $order['payMethod'] : 1, //1:寄方付 2:收方付 3:第三方付
-                    'express_type' => isset($order['expressType']) ? $order['expressType'] : 2, //顺丰特惠
-                    'sendstarttime' => isset($order['reserveTime']) ? $order['reserveTime'] : date('Y-m-d H:i:s'),
+                    'custid' => isset($order['order']['custId']) ? $order['order']['custId'] : '', //顺丰月结卡号
+                    'pay_method' => isset($order['order']['payMethod']) ? $order['order']['payMethod'] : 1, //1:寄方付 2:收方付 3:第三方付
+                    'express_type' => isset($order['order']['expressType']) ? $order['order']['expressType'] : 2, //顺丰特惠
+                    'sendstarttime' => isset($order['order']['reserveTime']) ? $order['order']['reserveTime'] : date('Y-m-d H:i:s'),
                     'is_docall' => 2
                 ]
             ],
-            'Cargo' => [
-                [
-                    'name' => '身份证复印件正反面',
-                    'count' => '1',
-                    'unit' => '份'
-                ], [
-                    'name' => '交强险保单副本原件',
-                    'count' => '1',
-                    'unit' => '份'
-                ], [
-                    'name' => '车辆登记证书复印件',
-                    'count' => '1',
-                    'unit' => '份'
-                ], [
-                    'name' => '行驶证原件和复印件',
-                    'count' => '1',
-                    'unit' => '份'
-                ]
-            ]
+            'Cargo' => $order['cargo'],
+            'AddedService' => $order['addedService']
         ], 'OrderService');
 
         $response = $this->verifyToCurl($data, 'OrderService');
