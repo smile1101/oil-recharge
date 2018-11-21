@@ -1,23 +1,17 @@
 <?php
 
-namespace Recharge\Sf;
+namespace Recharge\Cw;
 
 use Recharge\Kernel\ServiceContainer;
 
-/**
- * 顺丰物流
- * Class Application
- * @package Recharge\Sf
- */
 class Application extends ServiceContainer
 {
-
     /**
      * @var array
      */
     protected $providers = [
         Base\ServiceProvider::class,
-        Orders\ServiceProvider::class,
+        Violate\ServiceProvider::class,
     ];
 
     /**

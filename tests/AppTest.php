@@ -28,7 +28,7 @@ class AppTest extends TestCase
         ];*/
 
         //顺丰接口测试
-        $config = [
+        /*$config = [
             'appId' => 'LP_leOtG',
             'appKey' => 'AvIeSB6hJxdFVmJasXQdcB9CEVOs6Ag1',
             'retUrl' => '/nptify',
@@ -69,13 +69,34 @@ class AppTest extends TestCase
                     'value1' => '￥1000',
                 ]
             ]
-        ];
+        ];*/
         /*$payload = [
             'orderId' => 'SF20181115154626',
             //'dealType' => 2 //取消订单标记
         ];*/
-        $app = Factory::sf($config);
+        /*$app = Factory::sf($config);
         $response = $app->orders->create($payload);
+        var_export($response);*/
+
+        $config = [
+            'appId' => 'A10021',
+            'appKey' => '123456789',
+            'appStr' => '123456789',
+            'retUrl' => '/notify'
+        ];
+
+        $app = Factory::cw($config);
+
+        $payload = [
+            'carNumber' => '粤B8N589',
+            'vin' => '123456',
+            'engine' => '123456',
+            //'spOrder' => 'TEST' . date('YmdHis'),
+            //'uniqueCode' => 'a03be530-8eeb-43ab-8095-26fd7383c73f',
+        ];
+
+        $response = $app->violate->query($payload);
+
         var_export($response);
     }
 }

@@ -1,7 +1,6 @@
 <?php
-namespace Recharge\Recharge\Base;
+namespace Recharge\Kernel;
 
-use Recharge\Recharge\Application;
 use Recharge\Traits\HttpRequestTraits;
 
 class BasicClient
@@ -12,10 +11,10 @@ class BasicClient
     protected $app;
 
     /**
-     * Constructor.
-     * @param Application $app
+     * BasicClient constructor.
+     * @param ServiceContainer $app
      */
-    public function __construct(Application $app)
+    public function __construct(ServiceContainer $app)
     {
         $this->app = $app;
     }

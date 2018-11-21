@@ -2,7 +2,7 @@
 
 namespace Recharge\Sf\Orders;
 
-use Recharge\Sf\Base\BasicClient;
+use Recharge\Kernel\BasicClient;
 use Recharge\Supports\Response;
 
 class Client extends BasicClient

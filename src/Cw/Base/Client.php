@@ -1,6 +1,6 @@
 <?php
 
-namespace Recharge\Sf\Base;
+namespace Recharge\Cw\Base;
 
 use Recharge\Kernel\BasicClient;
 

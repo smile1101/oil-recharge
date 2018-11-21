@@ -2,9 +2,8 @@
 
 namespace Recharge\Recharge\Jlhpay;
 
-use Recharge\Exceptions\Exception;
 use Recharge\Exceptions\RuntimeException;
-use Recharge\Recharge\Base\BasicClient;
+use Recharge\Kernel\BasicClient;
 use Recharge\Recharge\Container\Container;
 use Recharge\Supports\Response;
 
